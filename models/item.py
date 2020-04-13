@@ -1,7 +1,8 @@
 from typing import Dict, List, Union
 from db import db
-#all keys in this dict are strings
-ItemJson = Dict[str, Union[int,float,str]]
+
+# all keys in this dict are strings
+ItemJson = Dict[str, Union[int, float, str]]
 
 
 class ItemModel(db.Model):
@@ -28,13 +29,13 @@ class ItemModel(db.Model):
         }
 
     @classmethod
-    #return has to be in quotes because item model dosn't exist
-    #python will look to return the current class after the item value 
+    # return has to be in quotes because item model dosn't exist
+    # python will look to return the current class after the item value
     def find_by_name(cls, name: str) -> "ItemModel":
         return cls.query.filter_by(name=name).first()
 
     @classmethod
-    def find_all(cls) ->List["ItemModel"]:
+    def find_all(cls) -> List["ItemModel"]:
         return cls.query.all()
 
     def save_to_db(self) -> None:

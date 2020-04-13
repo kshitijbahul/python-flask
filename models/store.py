@@ -2,12 +2,14 @@ from typing import Dict, List, Union
 from models.item import ItemJson
 from db import db
 
-StoreJson = Dict[str,Union[int,str,List[ItemJson]]]
+StoreJson = Dict[str, Union[int, str, List[ItemJson]]]
+
+
 class StoreModel(db.Model):
     __tablename__ = "stores"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80),unique=True)
+    name = db.Column(db.String(80), unique=True)
 
     items = db.relationship("ItemModel", lazy="dynamic")
 
@@ -22,11 +24,11 @@ class StoreModel(db.Model):
         }
 
     @classmethod
-    def find_by_name(cls, name: str) ->"StoreModel":
+    def find_by_name(cls, name: str) -> "StoreModel":
         return cls.query.filter_by(name=name).first()
 
     @classmethod
-    def find_all(cls) ->List["StoreModel"]:
+    def find_all(cls) -> List["StoreModel"]:
         return cls.query.all()
 
     def save_to_db(self) -> None:

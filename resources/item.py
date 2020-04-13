@@ -25,7 +25,10 @@ class Item(Resource):
     @fresh_jwt_required
     def post(self, name: str):
         if ItemModel.find_by_name(name):
-            return {"message": "An item with name '{}' already exists.".format(name)},400
+            return (
+                {"message": "An item with name '{}' already exists.".format(name)},
+                400,
+            )
 
         data = Item.parser.parse_args()
         item = ItemModel(name, **data)
@@ -59,4 +62,3 @@ class Item(Resource):
 class ItemList(Resource):
     def get(self):
         return {"items": [item.json() for item in ItemModel.find_all()]}, 200
-        
