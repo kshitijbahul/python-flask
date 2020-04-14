@@ -1,3 +1,3 @@
-from flask_masrhmallow import Marshmallow
+from flask_marshmallow import Marshmallow
 
 ma = Marshmallow()
