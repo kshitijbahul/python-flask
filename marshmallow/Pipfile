@@ -1,0 +1,17 @@
+[[source]
+
+url ="https://pypi.python.org/simple
+
+verify_ssl = true
+
+name = "pypi"
+
+[packages]
+
+marshmallow = "==3.0.0b16"
+
+[dev-packages]
+
+[requires]
+
+python_version=
