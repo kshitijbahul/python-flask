@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
+from ma import ma
 from db import db
 from blacklist import BLACKLIST
 from resources.user import UserRegister, UserLogin, User, TokenRefresh, UserLogout
@@ -48,4 +49,5 @@ api.add_resource(UserLogout, "/logout")
 
 if __name__ == "__main__":
     db.init_app(app)
+    ma.init_app(app)#tell what flask to talk to
     app.run(port=5000, debug=True)
