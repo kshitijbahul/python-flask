@@ -25,9 +25,9 @@ class UserModel(db.Model):
     @classmethod
     def find_by_id(cls, _id: int) -> "UserModel":
         return cls.query.filter_by(id=_id).first()
-
+    
     def save_to_db(self) -> None:
-        db.session.save(self)
+        db.session.add(self)
         db.session.commit()
 
     def delete_from_db(self) -> None:
