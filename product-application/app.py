@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-
+from marshmallow import ValidationError
 from ma import ma
 from db import db
 from blacklist import BLACKLIST
@@ -26,6 +26,10 @@ api = Api(app)
 def create_tables():
     db.create_all()
 
+#Error handler
+@app.errorhandler(ValidationError)
+def handle_marshmallow_validation(err):
+    return jsonify(err.messages), 400
 
 jwt = JWTManager(app)
 

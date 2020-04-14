@@ -38,10 +38,7 @@ class Item(Resource):
 
         item_json = request.get_json()
         item_json["name"] = name
-        try:
-            item = item_schema.load(item_json)
-        except ValidationError as err:
-            return err.messages, 400
+        item = item_schema.load(item_json)
         try:
             item.save_to_db()
         except:
@@ -66,10 +63,7 @@ class Item(Resource):
             item.price = item_json.price
         else:
             item_json["name"] = name
-            try:
-                item = item_schema.load(item_json)
-            except ValidationError as err:
-                return err.messages, 400
+            item = item_schema.load(item_json)
         item.save_to_db()
         return item_schema.dump(item), 200
 
