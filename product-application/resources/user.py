@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from flask import request, make_response, render_template
 from werkzeug.security import safe_str_cmp
+import traceback
 
 from flask_jwt_extended import (
     create_access_token,
@@ -17,6 +18,7 @@ from blacklist import BLACKLIST
 
 BLANK_ERROR= "'{}' field cannot be left blank!"
 USERNAME_ALREADY_EXISTS = "A user with that username already exists."
+EMAIL_ALREADY_EXISTS = "A user with that email already exists."
 USER_CREATED_SUCCESSFULLY = "User created successfully."
 USER_NOT_FOUND = "User not found."
 USER_DELETED = "User deleted."
@@ -25,6 +27,8 @@ USER_LOGIN_SUCCESSFUL = "User <id={}> successfully logged out."
 USER_NOT_CONFIRMED = "'{}' You have not confirmed registeration. Check your email"
 USER_ALREADY_ACTIVE = "'{} is already active"
 USER_IS_NOW_ACTIVATED = "'{}' has been activated successfully"
+INTERNAL_SERVER_ERROR = "Internal Server error while processing the request"
+SUCCESS_REGISTER_MESSAGE = "Account created successfully. An email is sent to your registered email. Please click to activate account"
 user_schema = UserSchema()
 
 
@@ -36,11 +40,17 @@ class UserRegister(Resource):
 
         if UserModel.find_by_username(user.username):
             return {"message": USERNAME_ALREADY_EXISTS}, 400
-
+        if UserModel.find_by_email(user.email):
+            return {"message": EMAIL_ALREADY_EXISTS}, 400
         #user = UserModel(**user_data) # not needed since model is created by marshmallo
-        user.save_to_db()
-
-        return {"message": USER_CREATED_SUCCESSFULLY}, 201
+        try:
+            user.save_to_db()
+            user.sendConfirmationEmail()
+            return {"message": SUCCESS_REGISTER_MESSAGE}, 201
+        except:
+            traceback.print_exc()#Current error caught
+            return {"message":INTERNAL_SERVER_ERROR}, 500
+        
 
 
 class User(Resource):
@@ -68,7 +78,7 @@ class User(Resource):
 class UserLogin(Resource):
     @classmethod
     def post(cls):
-        user_data = user_schema.load(request.get_json())
+        user_data = user_schema.load(request.get_json(), partial=("email",))#ignore email field if present
 
         user = UserModel.find_by_username(user_data.username)
 
