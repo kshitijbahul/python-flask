@@ -22,7 +22,9 @@ USER_NOT_FOUND = "User not found."
 USER_DELETED = "User deleted."
 INVALID_CREDENTIALS = "Invalid credentials!"
 USER_LOGIN_SUCCESSFUL = "User <id={}> successfully logged out."
-
+USER_NOT_CONFIRMED = "'{}' You have not confirmed registeration. Check your email"
+USER_ALREADY_ACTIVE = "'{} is already active"
+USER_IS_NOW_ACTIVATED = "'{}' has been activated successfully"
 user_schema = UserSchema()
 
 
@@ -73,9 +75,11 @@ class UserLogin(Resource):
         # this is what the `authenticate()` function did in security.py
         if user and safe_str_cmp(user.password, user_data.password):
             # identity= is what the identity() function did in security.py—now stored in the JWT
-            access_token = create_access_token(identity=user.id, fresh=True)
-            refresh_token = create_refresh_token(user.id)
-            return {"access_token": access_token, "refresh_token": refresh_token}, 200
+            if user.activated: 
+                access_token = create_access_token(identity=user.id, fresh=True)
+                refresh_token = create_refresh_token(user.id)
+                return {"access_token": access_token, "refresh_token": refresh_token}, 200
+            return USER_NOT_CONFIRMED.format(user.username), 400
 
         return {"message": INVALID_CREDENTIALS}, 401
 
@@ -97,3 +101,21 @@ class TokenRefresh(Resource):
         current_user = get_jwt_identity()
         new_token = create_access_token(identity=current_user, fresh=False)
         return {"access_token": new_token}, 200
+
+class UserConfirmation(Resource):
+    @classmethod
+    def get(cls,userid: int):
+        #find the user by id 
+        user = UserModel.find_by_id(userid)
+        if (user and user.activated == False): 
+             # activate it
+            #save to db
+            #return message
+            user.activated = True
+            user.save_to_db()
+            return {"message":USER_IS_NOW_ACTIVATED.format(user.username)},200
+        elif user.activate:
+            return {"message":USER_ALREADY_ACTIVE.format(userid)}, 200
+        return USER_NOT_FOUND, 400 
+
+       
