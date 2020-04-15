@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, make_response, render_template
 from werkzeug.security import safe_str_cmp
 
 from flask_jwt_extended import (
@@ -113,7 +113,9 @@ class UserConfirmation(Resource):
             #return message
             user.activated = True
             user.save_to_db()
-            return {"message":USER_IS_NOW_ACTIVATED.format(user.username)},200
+            headers = {"Content-Type": "text/html"}
+            return make_response(render_template("confirmation_page.html",email=user.username),200, headers)
+            #return redirect("", code=302) if we want to redirect to another page
         elif user.activate:
             return {"message":USER_ALREADY_ACTIVE.format(userid)}, 200
         return {"message":USER_NOT_FOUND}, 400
