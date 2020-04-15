@@ -116,6 +116,6 @@ class UserConfirmation(Resource):
             return {"message":USER_IS_NOW_ACTIVATED.format(user.username)},200
         elif user.activate:
             return {"message":USER_ALREADY_ACTIVE.format(userid)}, 200
-        return USER_NOT_FOUND, 400 
+        return {"message":USER_NOT_FOUND}, 400
 
        
